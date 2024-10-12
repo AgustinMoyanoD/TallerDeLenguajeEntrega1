@@ -67,7 +67,7 @@ public class Programa {
         System.out.println("CARGANDO PROGRAMA");
         reproducirMP3("src/JavaUtilidad/darkSouls.mp3");
         do {
-        	reproducirMP3("src/JavaUtilidad/darkSouls.mp3");
+        	
         	System.out.printf("Seleccionar opción: \n"
             		+ "1. Crear moneda \n"
                     + "2. Listar monedas \n"
@@ -79,7 +79,7 @@ public class Programa {
                     + "8. Simular Swap \n"
                     + "9. Cerrar\n"
                     + "opt: ");
-            
+        	reproducirMP3("src/JavaUtilidad/optionSelected.mp3");
             opt = in.nextInt();
             System.out.printf("[%d]\n\n", opt);
 
