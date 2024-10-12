@@ -3,6 +3,10 @@ package entregable1;
 import java.util.Scanner;
 import java.util.LinkedList;
 import java.util.Random;
+import javazoom.jl.decoder.*;
+import javazoom.jl.player.Player;
+
+import java.io.*;
 
 public class Programa {
 	private static double obtenerRandom(int n) {
@@ -54,16 +58,17 @@ public class Programa {
         
         
         
-        
+
         
         
         Usuario temp = new Usuario(new String("admin"),
         						new String("0123"),
         						new String("Argentina"));
-        
-
+        System.out.println("CARGANDO PROGRAMA");
+        reproducirMP3("src/JavaUtilidad/darkSouls.mp3");
         do {
-            System.out.printf("Seleccionar opción: \n"
+        	reproducirMP3("src/JavaUtilidad/darkSouls.mp3");
+        	System.out.printf("Seleccionar opción: \n"
             		+ "1. Crear moneda \n"
                     + "2. Listar monedas \n"
                     + "3. Generar Stock \n"
@@ -114,5 +119,16 @@ public class Programa {
         } while (opt != _EXIT);
 
         in.close();
+
+    }
+    public static void reproducirMP3(String rutaArchivo) {
+        try {
+            FileInputStream archivoSonido = new FileInputStream(rutaArchivo);
+            Player reproductor = new Player(archivoSonido);
+            reproductor.play();
+        } catch (FileNotFoundException | JavaLayerException e) {
+            e.printStackTrace();
+        }
     }
 }
+
