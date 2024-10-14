@@ -32,15 +32,4 @@ public class MyConnection {
 			}
 		}
 	}
-	
-	public void setPath(String path) {
-		this.path = path;
-	}
-	public String getPath() {
-		return this.path;
-	}
-	
-	public Connection getConnection() {
-		return this.conn;
-	}
 }
