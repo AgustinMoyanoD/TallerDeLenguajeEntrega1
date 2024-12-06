@@ -1,18 +1,27 @@
 package entregable1;
 import daos.*;
+import modelos.MonitoreoCoin;
+
+import java.io.IOException;
 import java.sql.*;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 public class Sistema {
 	private List<Coin> monedas;
+	
 	private List<BlockChain> blockChain;
 	private List<Usuario> usuarios;
 	private List<Saldo> saldosUsuarios;
+	private List<Transaccion> transacciones;
 	//private MonitoreoCoin APIcoins;
 	private CoinDAO cDao;
 	private UsuarioDAO uDao;
@@ -45,7 +54,11 @@ public class Sistema {
 		cDao = new CoinDAO(); //se crea la tabla monedas con algunas monedas predefinidas.
 		
 		if (monedas.isEmpty()) {
-			monedas.addAll(cDao.devolverTabla());
+			for(Coin moneda: cDao.devolverTabla())
+			{
+				if(moneda.getTipo().equals("FIAT"))
+					this.monedas.add(moneda);
+			}
 			// traer todos los datos a una linked list
 		}
 		
@@ -64,7 +77,16 @@ public class Sistema {
 		
 		//INICIALIZAR tDAO
 		tDao = new TransaccionDAO();
+		this.transacciones = new LinkedList<Transaccion>();
+		this.transacciones.addAll(tDao.devolverTabla());
+		this.actualizarPrecioMonedas();
 	}
+	public void setMonedas(List<Coin> monedas) {
+		this.monedas.addAll(monedas);		
+		for(Coin C: this.monedas)
+			this.guardarMonedaDB(C);
+	}
+	
 	public void guardarMonedaDB(Coin moneda) {
 		this.cDao.guardar(moneda);
 	}
@@ -264,17 +286,39 @@ public class Sistema {
 			i++;
 		}
 	}
-	public Usuario getUsuario(String DNI) { //Busca un usuario en la base mediante su DNI.
+	public Usuario getUsuario(String Email) { //Busca un usuario en la base mediante su DNI.
+		System.out.println(transacciones.toString());
 		for (Usuario u : usuarios) {
-			if (u.getDNI().equals(DNI)) {
+			if (u.getEmail().equals(Email)) {
 				for (Saldo s: this.saldosUsuarios) {
-					if (s.getUser_id() == u.getDNI())
+					if (s.getUser_id().equals(u.getDNI()))
 						u.getBilletera().agregarSaldo(s);
+				}
+				for (Transaccion t: this.transacciones) {
+					if (t.getUserID().equals(u.getEmail()))
+					{
+						System.out.println("MATCH");
+						u.getBilletera().agregarTransaccion(t);
+						
+					}
+				
 				}
 				return u;
 			}	
 		}
+		
 		return null;
+	}
+	public boolean searchPass(String Email,String pass) { //Busca un usuario en la base mediante su DNI.
+		for (Usuario u : usuarios) {
+			if (u.getEmail().equals(Email)) {
+				if (u.getContraseña().equals(pass))
+					return true;
+				
+			}	
+		}
+		
+		return false;
 	}
 	public void generarStock() {
 		boolean aux=false;
@@ -315,6 +359,45 @@ public class Sistema {
 					user.getBilletera().agregarSaldo(s);
 				}
 			}
+	}
+	
+	private void actualizarPrecioMonedas()
+	{
+		Timer repetidor = new Timer();
+		TimerTask tarea = new TareaTimer();
+		repetidor.schedule(tarea, 20000, 135000);	//con llamadas cada 270 la api deberia durar un mes. Ajustar dependiendo la situacion	
+		
+	}
+	
+	private class TareaTimer extends TimerTask
+	{
+
+		@Override
+		public void run() {			
+			System.out.println("Sistema::Actualizando precios");
+			try {
+				MonitoreoCoin.updateMonedas();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				System.out.println("Sistema::Problemas conectando con la API. Precios desactualizados.");
+			}
+			for(Coin monedaGuardada: monedas)
+			{			
+				if(monedaGuardada.getTipo().equals("FIAT"))
+					continue;
+				Coin aux = MonitoreoCoin.getParticularCoin(monedaGuardada.getNombre());
+				if(aux == null)
+				{
+					System.out.println("Sistema::Problema conectando con la web. \n"
+							+ "Sistema::["+monedaGuardada.getNombre()+"] puede estar desactualizada");
+					continue;
+				}
+				monedaGuardada.setPrecio(aux.getPrecio()); //actualiza moneda en sistema
+				cDao.modificar(aux); //actualiza moneda en DB				
+			}
+			
+		}
+		
 	}
 	
 }

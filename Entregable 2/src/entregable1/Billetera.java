@@ -3,6 +3,10 @@ package entregable1;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
+
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+
 import daos.CoinDAO;
 
 import daos.TransaccionDAO;
@@ -22,6 +26,36 @@ public class Billetera {
 	private String CVU;
 	private String clavePublica;
 	private List<Transaccion> Transacciones;
+	
+	public void nuevaCompra(JTextField valor, Coin moneda)
+	{
+		double parsedValue = Double.parseDouble(valor.getText());
+		
+		JOptionPane.showMessageDialog(null,"Se ha cargado "+parsedValue+" en "+moneda.getNombre()
+				,"Compra Realizada", JOptionPane.INFORMATION_MESSAGE);
+	}
+	
+	public List<Transaccion> getTransacciones() {
+		return Transacciones;
+	}
+
+
+
+	public List<DeFi> getDefis() {
+		return defis;
+	}
+
+
+
+	public Tarjeta getTarjeta() {
+		return tarjeta;
+	}
+
+
+
+	public String getUserID() {
+		return userID;
+	}
 	private List<Saldo> arregloSaldo;
 	private List<DeFi> defis;
 	private Tarjeta tarjeta;
@@ -521,7 +555,9 @@ public class Billetera {
 		
 		return saldosString;
 	}
-	
+	public void agregarTransaccion(Transaccion t) {
+		this.Transacciones.add(t);
+	}
 	public List<Saldo> getArregloSaldo() {
 		return this.arregloSaldo;
 	}

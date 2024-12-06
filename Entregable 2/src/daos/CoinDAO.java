@@ -11,16 +11,16 @@ import java.util.List;
 
 import entregable1.Coin;
 import entregable1.TipoMoneda;
+import entregable1.Usuario;
 
 public class CoinDAO implements DaoInterface<Coin>{
 	private Connection con = null;
 	public CoinDAO() {
 		con = MyConnection.getCon();
 		this.crearTabla();
-		this.guardar(new Coin("BITCOIN","BTC",TipoMoneda.CRIPTOMONEDA,66362.79));
-		this.guardar(new Coin("ETHEREUM","ETH",TipoMoneda.CRIPTOMONEDA,2504.57));
-		this.guardar(new Coin("PESOS","ARS",TipoMoneda.FIAT,0.0010));
-		this.guardar(new Coin("DOLAR","USD",TipoMoneda.FIAT,1.0));
+		this.guardar(new Coin("Pesos", "ars", TipoMoneda.FIAT,0.0010));
+		this.guardar(new Coin("Dolar", "usd", TipoMoneda.FIAT,1.0));
+		
 	}
 	public void crearTabla() { //crea la base de datos si no existe ya.
 		try {
@@ -133,6 +133,8 @@ public class CoinDAO implements DaoInterface<Coin>{
 		
 		
 	}
+	
+	
 
 	
 }
